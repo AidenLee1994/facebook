@@ -29,8 +29,8 @@ class Facebook(object):
         self.proxy=get_Proxy(self.proxy_ip,self.proxy_port,self.proxy_username,self.proxy_password)
         self.option = webdriver.ChromeOptions()
 
-        self.option.add_argument("--headless")
-        self.option.add_argument("--disable-gpu")
+        # self.option.add_argument("--headless")
+        # self.option.add_argument("--disable-gpu")
 
         if self.proxy is not None:
             self.option.add_argument(self.proxy)
@@ -116,25 +116,30 @@ class Facebook(object):
     #检查页面内容是否加载完成
     def check_end(self):
         try:
-            self.driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[45]/div/div/span')
+            element=self.driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[last()]').text
+
+            if element=="已经到底啦~":
+                return True
+            else:
+                return False
             # 原文是except NoSuchElementException, e:
         except NoSuchElementException as e:
             # 发生了NoSuchElementException异常，说明页面中未找到该元素，返回False
             return False
-        else:
-            # 没有发生异常，表示在页面中找到了该元素，返回True
-            return True
+
 
 
     #获取更新页面内容
     def get_info(self):
         download_url=input("需要爬去的页面为:")
+        self.driver.refresh()
+        sleep(uniform(5, 10))
         self.driver.get(download_url)
         temp_height = 0
         while True:
             sleep(uniform(5, 10))
             #页面滚动，每次都在上次的基础上继续延伸
-            self.driver.execute_script("window.scrollTo(0,"+str(temp_height+randint(200,1000))+");")
+            self.driver.execute_script("window.scrollTo(0,"+str(temp_height+randint(200,8000))+");")
             self.driver.implicitly_wait(10)
             sleep(uniform(5,10))
             # # 获取当前滚动条距离顶部的距离
